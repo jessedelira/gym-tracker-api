@@ -1,0 +1,10 @@
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: gym-tracker-mysql
+        restart: unless-stopped
+        ports:
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: gymtracker
