@@ -15,23 +15,23 @@ export const requireUserSession = createMiddleware<{
 		throw new AppError('Unauthorized', HTTP_STATUS.UNAUTHORIZED)
 	}
 
-	const session = await db.session.findUnique({
+	const userSession = await db.userSession.findUnique({
 		where: { id: sessionId },
 		include: { user: true }
 	})
 
-	if (!session || new Date() > session.expiresAt) {
+	if (!userSession || new Date() > userSession.expiresAt) {
 		throw new AppError(
 			'Session expired or invalid',
 			HTTP_STATUS.UNAUTHORIZED
 		)
 	}
 
-	await db.session.update({
+	await db.userSession.update({
 		where: { id: sessionId },
 		data: { lastActive: new Date() }
 	})
 
-	c.set('user', session.user)
+	c.set('user', userSession.user)
 	await next()
 })

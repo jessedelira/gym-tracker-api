@@ -6,10 +6,8 @@ import { logger } from 'hono/logger'
 import { corsConfig } from './config/cors-config.js'
 import { customLoggerMiddleware } from './middleware/custom-logger-middleware.js'
 import { rateLimiterMiddleware } from './middleware/rate-limiter-middleware.js'
-import { attachmentRoute } from './routes/attachment-route.js'
 import { authRoute } from './routes/auth/auth-route.js'
-import { eventRoute } from './routes/event-route.js'
-import { healthRoute } from './routes/health-route.js'
+import { healthRoute } from './routes/health/health-route.js'
 import { userRoute } from './routes/user/user-route.js'
 import { errorHandler } from './utils/error-handler.js'
 
@@ -24,13 +22,7 @@ app.use('*', logger(customLoggerMiddleware))
 app.use('*', cors(corsConfig))
 
 // API Routes
-const apiRoutes = [
-	userRoute,
-	authRoute,
-	eventRoute,
-	attachmentRoute,
-	healthRoute
-]
+const apiRoutes = [userRoute, authRoute, healthRoute]
 
 for (const route of apiRoutes) {
 	app.route('/api', route)

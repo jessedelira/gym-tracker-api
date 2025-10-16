@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-import argon2  from 'argon2'
+import argon2 from 'argon2'
 import { Hono } from 'hono'
 
 import {
@@ -19,53 +19,52 @@ accountDeletionRoute.post(
 	zValidator('json', DeleteAccountSchema),
 	async (c) => {
 		const currentUser = c.get('user')
-    const deleteAccountDto: DeleteAccountDto = c.req.valid('json')
+		const deleteAccountDto: DeleteAccountDto = c.req.valid('json')
 
-    // Make sure the user can only delete their own account
-    if (currentUser.id !== deleteAccountDto.userId) {
-      throw new AppError('Unauthorized', HTTP_STATUS.UNAUTHORIZED)
-    }
+		// Make sure the user can only delete their own account
+		if (currentUser.id !== deleteAccountDto.userId) {
+			throw new AppError('Unauthorized', HTTP_STATUS.UNAUTHORIZED)
+		}
 
-    // Verify password
-    const doesInputPwMatchEncryptedPw = await argon2.verify(
-      currentUser.password,             // hashed password from DB
-      deleteAccountDto.password
-    )
+		// Verify password
+		const doesInputPwMatchEncryptedPw = await argon2.verify(
+			currentUser.password, // hashed password from DB
+			deleteAccountDto.password
+		)
 
-    if (!doesInputPwMatchEncryptedPw) {
-      throw new AppError('Password incorrect', HTTP_STATUS.UNAUTHORIZED)
-    }
+		if (!doesInputPwMatchEncryptedPw) {
+			throw new AppError('Password incorrect', HTTP_STATUS.UNAUTHORIZED)
+		}
 
-    // Delete related records
-    const deletedWorkouts = await db.workout.deleteMany({
-      where: { userId: deleteAccountDto.userId }
-    })
+		// Delete related records
+		const deletedWorkouts = await db.workout.deleteMany({
+			where: { userId: deleteAccountDto.userId }
+		})
 
-    const deletedSessions = await db.session.deleteMany({
-      where: { userId: deleteAccountDto.userId }
-    })
+		const deletedSessions = await db.session.deleteMany({
+			where: { userId: deleteAccountDto.userId }
+		})
 
-    const deletedRoutines = await db.routine.deleteMany({
-      where: { userId: deleteAccountDto.userId }
-    })
+		const deletedRoutines = await db.routine.deleteMany({
+			where: { userId: deleteAccountDto.userId }
+		})
 
-    const deletedUser = await db.user.delete({
-      where: { id: deleteAccountDto.userId }
-    })
+		const deletedUser = await db.user.delete({
+			where: { id: deleteAccountDto.userId }
+		})
 
-    console.log('Number of workouts deleted: ', deletedWorkouts.count)
-    console.log('Number of sessions deleted: ', deletedSessions.count)
-    console.log('Number of routines deleted: ', deletedRoutines.count)
-    console.log('User Deleted: ', deletedUser)
+		console.log('Number of workouts deleted: ', deletedWorkouts.count)
+		console.log('Number of sessions deleted: ', deletedSessions.count)
+		console.log('Number of routines deleted: ', deletedRoutines.count)
+		console.log('User Deleted: ', deletedUser)
 
-    const allDeletedData = {
-      deletedWorkouts,
-      deletedSessions,
-      deletedRoutines,
-      deletedUser
-    }
+		const allDeletedData = {
+			deletedWorkouts,
+			deletedSessions,
+			deletedRoutines,
+			deletedUser
+		}
 
-    return c.json(allDeletedData)
-  
+		return c.json(allDeletedData)
 	}
 )

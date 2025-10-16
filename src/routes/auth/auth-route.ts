@@ -2,8 +2,8 @@ import { zValidator } from '@hono/zod-validator'
 import { Preference } from '@prisma/client'
 import argon2 from 'argon2'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
+import { LoginUserSchema, type LoginUserDto } from './dto/login-user.dto.js'
 import {
 	RegisterUserSchema,
 	type RegisterUserDto
@@ -13,7 +13,6 @@ import { requireUserSession } from '../../middleware/require-user-session-middle
 import { AppError } from '../../utils/error-handler.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
 
-import type { LoginUserDto } from './dto/login-user.dto.js'
 
 export const authRoute = new Hono().basePath('auth')
 
@@ -75,19 +74,16 @@ authRoute.post(
 	}
 )
 
-const LoginSchema = z.object({ username: z.string(), password: z.string() })
-
-authRoute.post('/login', zValidator('json', LoginSchema), async (c) => {
-
+authRoute.post('/login', zValidator('json', LoginUserSchema), async (c) => {
 	const loginUserDto: LoginUserDto = c.req.valid('json')
-
-
 
 	// Always hash a dummy password to prevent timing attacks
 	const dummyHash =
 		'$argon2id$v=19$m=65536,t=3,p=4$DummyHashToPreventTimingAttacks'
 
-	const user = await db.user.findUnique({ where: { username: loginUserDto.username } })
+	const user = await db.user.findUnique({
+		where: { username: loginUserDto.username }
+	})
 
 	// Verify password (or dummy hash if user doesn't exist)
 	const passwordToVerify = user?.password || dummyHash
@@ -100,7 +96,7 @@ authRoute.post('/login', zValidator('json', LoginSchema), async (c) => {
 
 	// Create session
 	const expiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000)
-	const session = await db.session.create({
+	const userSession = await db.userSession.create({
 		data: {
 			userId: user.id,
 			userAgent: c.req.header('user-agent') || '',
@@ -110,7 +106,7 @@ authRoute.post('/login', zValidator('json', LoginSchema), async (c) => {
 
 	c.header(
 		'Set-Cookie',
-		`${SESSION_COOKIE}=${session.id}; HttpOnly; Path=/; Max-Age=${SESSION_MAX_AGE}; SameSite=Strict; Secure`
+		`${SESSION_COOKIE}=${userSession.id}; HttpOnly; Path=/; Max-Age=${SESSION_MAX_AGE}; SameSite=Strict; Secure`
 	)
 
 	// Return user data along with success
@@ -144,7 +140,7 @@ authRoute.post('logout', requireUserSession, async (c) => {
 		?.split('=')[1]
 
 	if (sessionId) {
-		await db.session.delete({
+		await db.userSession.delete({
 			where: { id: sessionId }
 		})
 	}
