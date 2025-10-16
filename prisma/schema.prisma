@@ -9,32 +9,32 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(cuid())
-  dateCreated      DateTime           @default(now()) @map("date_created")
-  username         String             @unique
-  password         String
-  firstName        String             @map("first_name")
-  lastName         String             @map("last_name")
-  hasSeenLatestChangelog Boolean      @default(false) @map("has_seen_latest_changelog")
-  routines         Routine[]
-  sessions         WorkoutSession[]
-  workouts         Workout[]
-  completedSession CompletedSession[]
-  activeSession    ActiveSession[]
-  userPreferences  UserPreference[]
-  userSetting      UserSetting?
+  id                     String             @id @default(cuid())
+  dateCreated            DateTime           @default(now()) @map("date_created")
+  username               String             @unique
+  password               String
+  firstName              String             @map("first_name")
+  lastName               String             @map("last_name")
+  hasSeenLatestChangelog Boolean            @default(false) @map("has_seen_latest_changelog")
+  routines               Routine[]
+  sessions               Session[]
+  userSessions           UserSession[]
+  workouts               Workout[]
+  completedSession       CompletedSession[]
+  activeSession          ActiveSession[]
+  userPreferences        UserPreference[]
+  userSetting            UserSetting?
 
   @@map("user")
-  Session Session[]
 }
 
 model Routine {
   id          String    @id @default(cuid())
   createdAt   DateTime  @default(now()) @map("created_at")
-  name        String    
+  name        String
   description String?
   isActive    Boolean   @default(false) @map("is_active")
-  sessions    WorkoutSession[]
+  sessions    Session[]
   user        User      @relation(fields: [userId], references: [id])
   userId      String    @map("user_id")
 
@@ -42,7 +42,7 @@ model Routine {
   @@map("routine")
 }
 
-model WorkoutSession {
+model Session {
   id               String              @id @default(cuid())
   createdAt        DateTime            @default(now()) @map("created_at")
   name             String
@@ -50,44 +50,45 @@ model WorkoutSession {
   workouts         Workout[]
   routine          Routine?            @relation(fields: [routineId], references: [id], onDelete: Cascade)
   routineId        String?             @map("routine_id")
-  days             WorkoutSessionDaysActive[]
+  daysActive             SessionDaysActive[]
   user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String              @map("user_id")
   completedSession CompletedSession[]
   activeSession    ActiveSession[]
 
-  @@map("workout_session")
+  @@map("session")
 }
 
-model WorkoutSessionDaysActive {
-  id        String  @id @default(cuid())
-  day       String
-  session   WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId String  @map("session_id")
+model SessionDaysActive {
+  id        String    @id @default(cuid())
+  day       DayOfWeek
+  session   Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String    @map("session_id")
 
-  @@map("workout_session_days_active")
+  @@map("session_days_active")
 }
+
 
 model Workout {
-  id         String   @id @default(cuid())
-  reps       Int?
-  sets       Int?
-  weightLbs  Int?     @map("weight_lbs")
+  id              String   @id @default(cuid())
+  reps            Int?
+  sets            Int?
+  weightLbs       Int?     @map("weight_lbs")
   durationSeconds Int?     @map("duration_seconds")
-  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-  exerciseId String   @map("exercise_id")
-  session    WorkoutSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId  String   @map("session_id")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String   @map("user_id")
+  exercise        Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  exerciseId      String   @map("exercise_id")
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId       String   @map("session_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String   @map("user_id")
 
   @@map("workout")
 }
 
 model Exercise {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  description String?   @db.VarChar(300)
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?      @db.VarChar(300)
   workouts    Workout[]
   type        ExerciseType
 
@@ -97,7 +98,7 @@ model Exercise {
 model ActiveSession {
   id        String   @id @default(cuid())
   startedAt DateTime @default(now()) @map("started_at")
-  session   WorkoutSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId String   @map("session_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @map("user_id")
@@ -105,7 +106,7 @@ model ActiveSession {
   @@map("active_session")
 }
 
-model Session {
+model UserSession {
   id         String   @id @default(cuid())
   user       User     @relation(fields: [userId], references: [id])
   userId     String
@@ -113,6 +114,8 @@ model Session {
   createdAt  DateTime @default(now())
   expiresAt  DateTime
   lastActive DateTime @updatedAt
+
+  @@map("user_session")
 }
 
 // TODO: Add a field that holds minutes and seconds for thd duration of the sesssion
@@ -121,7 +124,7 @@ model CompletedSession {
   startedAt           DateTime @map("started_at")
   completedAt         DateTime @default(now()) @map("completed_at")
   percentageCompleted Int      @map("percentage_completed")
-  session             WorkoutSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session             Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId           String   @map("session_id")
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String   @map("user_id")
@@ -140,20 +143,21 @@ model UserPreference {
 }
 
 model UserSetting {
-  id         String     @id @default(cuid())
+  id         String      @id @default(cuid())
   timezone   TimezoneMap @relation(fields: [timezoneId], references: [id], onDelete: Cascade)
-  timezoneId String     @map("timezone_id")
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String     @unique @map("user_id")
+  timezoneId String      @map("timezone_id")
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String      @unique @map("user_id")
 
   @@map("user_setting")
 }
 
 model TimezoneMap {
-  id       String @id @default(cuid())
-  iana String @unique @map("iana")
-  display  String @map("display")
+  id          String        @id @default(cuid())
+  iana        String        @unique @map("iana")
+  display     String        @map("display")
   userSetting UserSetting[]
+
   @@map("timezone_map")
 }
 
@@ -165,4 +169,14 @@ enum Preference {
 enum ExerciseType {
   WEIGHTED
   DURATION
+}
+
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
