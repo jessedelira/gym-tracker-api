@@ -8,6 +8,7 @@ const seedTimezones = async () => {
 	// Update value to reflect number of timezones in the database
 	if (result.length > 0) {
 		console.log('Timezones already seeded')
+
 		return
 	} else {
 		// Wipe table
