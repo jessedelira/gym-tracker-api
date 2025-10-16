@@ -20,6 +20,7 @@
 		"@hono/zod-validator": "^0.7.4",
 		"@prisma/client": "^6.8.2",
 		"argon2": "^0.43.0",
+		"date-fns-tz": "^3.2.0",
 		"hono": "^4.7.11",
 		"nanoid": "^5.1.6",
 		"zod": "^3.25.49"
