@@ -1,12 +1,12 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 
-import { CreateActiveSessionSchema } from './dto/create-active-session.dto.js'
-import { GetActiveSessionSchema } from './dto/get-active-session.dto.js'
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { AppError } from '../../utils/error-handler.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
+import { CreateActiveSessionSchema } from './dto/create-active-session.dto.js'
+import { GetActiveSessionSchema } from './dto/get-active-session.dto.js'
 
 // Route setup
 export const activeSessionRoute = new Hono().basePath('active-session')

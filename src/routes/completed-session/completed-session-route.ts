@@ -1,16 +1,16 @@
 import { zValidator } from '@hono/zod-validator'
-import { toZonedTime, getTimezoneOffset } from 'date-fns-tz'
+import { getTimezoneOffset, toZonedTime } from 'date-fns-tz'
 import { Hono } from 'hono'
 
-import { CreateCompletedSessionSchema } from './dto/create-completed-session.dto.js'
-import {
-	GetCompletedSessionIdsSchema,
-	type GetCompletedSessionIdsDto
-} from './dto/get-completed-session-ids.dto.js'
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { AppError } from '../../utils/error-handler.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
+import { CreateCompletedSessionSchema } from './dto/create-completed-session.dto.js'
+import {
+	type GetCompletedSessionIdsDto,
+	GetCompletedSessionIdsSchema
+} from './dto/get-completed-session-ids.dto.js'
 
 // Route setup
 export const completedSessionRoute = new Hono().basePath('completed-session')

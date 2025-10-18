@@ -1,5 +1,6 @@
 import { type Context } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { ZodError } from 'zod'
 
 import { HTTP_STATUS } from './http-status.enum.js'
@@ -8,8 +9,8 @@ export class AppError extends Error {
 	public statusCode: number
 
 	constructor(
-		message: string,
-		statusCode: number = HTTP_STATUS.INTERNAL_SERVER_ERROR,
+		message?: string,
+		statusCode: ContentfulStatusCode = 500,
 		cause?: unknown
 	) {
 		super(message)
@@ -35,6 +36,11 @@ export function errorHandler(error: Error, c: Context) {
 	// HTTP exceptions
 	if (error instanceof HTTPException) {
 		return c.json({ error: error.message }, error.status)
+	}
+
+	// App Error
+	if (error instanceof AppError) {
+		return c.json({ error: error.message })
 	}
 
 	// Everything else

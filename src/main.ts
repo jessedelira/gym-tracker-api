@@ -2,10 +2,12 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { env } from 'process'
 
 import { corsConfig } from './config/cors-config.js'
 import { customLoggerMiddleware } from './middleware/custom-logger-middleware.js'
 import { rateLimiterMiddleware } from './middleware/rate-limiter-middleware.js'
+import { accountDeletionRoute } from './routes/account-deletion/account-deletion-route.js'
 import { authRoute } from './routes/auth/auth-route.js'
 import { healthRoute } from './routes/health/health-route.js'
 import { userRoute } from './routes/user/user-route.js'
@@ -22,14 +24,14 @@ app.use('*', logger(customLoggerMiddleware))
 app.use('*', cors(corsConfig))
 
 // API Routes
-const apiRoutes = [userRoute, authRoute, healthRoute]
+const apiRoutes = [userRoute, authRoute, healthRoute, accountDeletionRoute]
 
 for (const route of apiRoutes) {
 	app.route('/api', route)
 }
 
 // Start server
-const port = Number(process.env.PORT) || 3000
+const port = Number(env.PORT) || 3000
 
 serve(
 	{
@@ -39,7 +41,7 @@ serve(
 	(info) => {
 		console.log('🚀 Server started successfully', {
 			port: info.port,
-			environment: process.env.NODE_ENV || 'development',
+			environment: env.NODE_ENV || 'development',
 			nodeVersion: process.version,
 			pid: process.pid
 		})

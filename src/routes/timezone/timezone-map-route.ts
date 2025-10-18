@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 
 export const timezoneMapRoute = new Hono()
 

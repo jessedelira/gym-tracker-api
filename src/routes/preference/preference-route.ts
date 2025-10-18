@@ -1,13 +1,13 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 
-import {
-	UpdatePreferenceIdSchema,
-	type UpdatePreferenceIdDto
-} from './dto/update-preference-id.dto.js'
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
+import {
+	type UpdatePreferenceIdDto,
+	UpdatePreferenceIdSchema
+} from './dto/update-preference-id.dto.js'
 
 // Route setup
 export const preferenceRoute = new Hono().basePath('preference')

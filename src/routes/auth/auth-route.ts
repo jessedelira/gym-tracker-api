@@ -3,16 +3,15 @@ import { Preference } from '@prisma/client'
 import argon2 from 'argon2'
 import { Hono } from 'hono'
 
-import { LoginUserSchema, type LoginUserDto } from './dto/login-user.dto.js'
-import {
-	RegisterUserSchema,
-	type RegisterUserDto
-} from './dto/register-user.dto.js'
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { AppError } from '../../utils/error-handler.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
-
+import { type LoginUserDto, LoginUserSchema } from './dto/login-user.dto.js'
+import {
+	type RegisterUserDto,
+	RegisterUserSchema
+} from './dto/register-user.dto.js'
 
 export const authRoute = new Hono().basePath('auth')
 

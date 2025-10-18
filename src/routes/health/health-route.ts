@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
+import { env } from 'process'
 
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 
 export const healthRoute = new Hono().basePath('health')
 
@@ -54,9 +55,7 @@ healthRoute.get('/detailed', async (c) => {
 	// Environment variables check
 	const requiredEnvVars = ['DATABASE_URL', 'SESSION_SECRET']
 
-	const missingEnvVars = requiredEnvVars.filter(
-		(envVar) => !process.env[envVar]
-	)
+	const missingEnvVars = requiredEnvVars.filter((envVar) => !env[envVar])
 
 	checks['environment'] = {
 		status: missingEnvVars.length === 0 ? 'healthy' : 'unhealthy',
@@ -74,7 +73,7 @@ healthRoute.get('/detailed', async (c) => {
 		status: overallStatus,
 		timestamp: new Date().toISOString(),
 		version: '1.0.0',
-		environment: process.env.NODE_ENV || 'development',
+		environment: env.NODE_ENV || 'development',
 		uptime: process.uptime(),
 		checks,
 		responseTime: Date.now() - startTime

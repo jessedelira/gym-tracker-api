@@ -1,17 +1,17 @@
 import { zValidator } from '@hono/zod-validator'
-import { ExerciseType, type Exercise, type Workout } from '@prisma/client'
+import { type Exercise, ExerciseType, type Workout } from '@prisma/client'
 import { Hono } from 'hono'
 
+import db from '../../db/db.js'
+import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import {
-	CreateManyWorkoutsSchema,
-	type CreateManyWorkoutsDto
+	type CreateManyWorkoutsDto,
+	CreateManyWorkoutsSchema
 } from './dto/create-many-workouts.dto.js'
 import {
-	CreateWorkoutSchema,
-	type CreateWorkoutDto
+	type CreateWorkoutDto,
+	CreateWorkoutSchema
 } from './dto/create-workout.dto.js'
-import { db } from '../../db/prisma-config.js'
-import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 
 export type WorkoutWithExercise = (Workout & { exercise: Exercise })[]
 
@@ -40,7 +40,7 @@ workoutRoute.post(
 
 		if (exercise.type === ExerciseType.WEIGHTED) {
 			Object.assign(workoutData, {
-				weightLbs: createWorkoutDto.weight,
+				weightLbs: createWorkoutDto.weightLbs,
 				reps: createWorkoutDto.reps,
 				sets: createWorkoutDto.sets
 			})

@@ -2,8 +2,9 @@ import js from '@eslint/js'
 import parser from '@typescript-eslint/parser'
 import pluginTs from '@typescript-eslint/eslint-plugin'
 import prettier from 'eslint-config-prettier'
-import pluginImport from 'eslint-plugin-import'
-import globals from 'globals' // <-- import globals package
+import globals from 'globals'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import pluginUnusedImports from 'eslint-plugin-unused-imports'
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
@@ -19,35 +20,32 @@ export default [
 				sourceType: 'module'
 			},
 			globals: {
-				...globals.node, // includes 'console' and 'Buffer'
-				...globals.browser // includes 'File' and other browser globals
+				...globals.node,
+				...globals.browser
 			}
 		},
 		plugins: {
 			'@typescript-eslint': pluginTs,
-			import: pluginImport
+			'simple-import-sort': simpleImportSort,
+			'unused-imports': pluginUnusedImports
 		},
 		rules: {
 			...pluginTs.configs.recommended.rules,
 
-			'import/order': [
-				'error',
+			// Remove unused imports/vars
+			'unused-imports/no-unused-imports': 'error',
+			'unused-imports/no-unused-vars': [
+				'warn',
 				{
-					groups: [
-						'builtin',
-						'external',
-						'internal',
-						['parent', 'sibling', 'index'],
-						'object',
-						'type'
-					],
-					'newlines-between': 'always',
-					alphabetize: {
-						order: 'asc',
-						caseInsensitive: true
-					}
+					vars: 'all',
+					varsIgnorePattern: '^_',
+					args: 'after-used',
+					argsIgnorePattern: '^_'
 				}
 			],
+
+			'simple-import-sort/imports': 'error',
+			'simple-import-sort/exports': 'error',
 
 			'no-multiple-empty-lines': ['warn', { max: 1, maxEOF: 0 }],
 			'padding-line-between-statements': [
