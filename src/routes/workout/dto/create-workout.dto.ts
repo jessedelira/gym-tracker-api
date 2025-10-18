@@ -2,7 +2,7 @@ import z from 'zod'
 
 export const CreateWorkoutSchema = z.object({
 	exerciseId: z.string(),
-	weight: z.number().nullable(),
+	weightLbs: z.number().nullable(),
 	reps: z.number().nullable(),
 	sets: z.number().nullable(),
 	durationSeconds: z.number().nullable(),

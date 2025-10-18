@@ -1,10 +1,9 @@
+import type { User } from '@prisma/client'
 import { createMiddleware } from 'hono/factory'
 
-import { db } from '../db/prisma-config.js'
+import db from '../db/db.js'
 import { AppError } from '../utils/error-handler.js'
 import { HTTP_STATUS } from '../utils/http-status.enum.js'
-
-import type { User } from '@prisma/client'
 
 export const requireUserSession = createMiddleware<{
 	Variables: { user: User }

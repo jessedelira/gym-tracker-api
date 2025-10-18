@@ -1,4 +1,5 @@
 import { type Context, type Next } from 'hono'
+import { env } from 'process'
 
 import { AppError } from '../utils/error-handler.js'
 
@@ -14,8 +15,8 @@ export async function rateLimiterMiddleware(c: Context, next: Next) {
 
 	const userLimit = rateLimiter.get(ip)
 
-	const windowMs = Number(process.env.RATE_LIMIT_WINDOW_MS) || 900000 // 15 minutes
-	const maxRequests = Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 50
+	const windowMs = Number(env.RATE_LIMIT_WINDOW_MS) || 900000 // 15 minutes
+	const maxRequests = Number(env.RATE_LIMIT_MAX_REQUESTS) || 50
 
 	if (userLimit) {
 		if (now > userLimit.resetTime) {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 
-import { db } from '../../db/prisma-config.js'
+import db	 from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { AppError } from '../../utils/error-handler.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'

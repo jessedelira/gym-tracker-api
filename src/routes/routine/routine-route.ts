@@ -2,14 +2,14 @@ import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
+import db from '../../db/db.js'
+import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
+import { AppError } from '../../utils/error-handler.js'
+import { HTTP_STATUS } from '../../utils/http-status.enum.js'
 import { CreateRoutineSchema } from './dto/create-routine.dto.js'
 import { RoutineIdParamSchema } from './dto/routine-id-param.dto.js'
 import { SessionRoutineActionSchema } from './dto/session-routine-action.dto.js'
 import { UpdateRoutineSchema } from './dto/update-routine.dto.js'
-import { db } from '../../db/prisma-config.js'
-import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
-import { AppError } from '../../utils/error-handler.js'
-import { HTTP_STATUS } from '../../utils/http-status.enum.js'
 
 // Route setup
 export const routineRoute = new Hono().basePath('routine')

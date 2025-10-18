@@ -1,7 +1,7 @@
 import { DayOfWeek } from '@prisma/client'
 import z from 'zod'
 
-import { CreateWorkoutSchema } from './create-workout.dto.js'
+import { CreateWorkoutSchema } from '../../workout/dto/create-workout.dto.js'
 
 export const CreateUpdateSessionSchema = z.object({
 	sessionId: z.string(),

@@ -4,16 +4,16 @@ import argon2 from 'argon2'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
-import { GetUserSchema, type GetUserDto } from './dto/get-user-param.dto.js'
-import { UpdateUserSchema } from './dto/update-user.dto.js'
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { AppError } from '../../utils/error-handler.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
 import {
-	RegisterUserSchema,
-	type RegisterUserDto
+	type RegisterUserDto,
+	RegisterUserSchema
 } from '../auth/dto/register-user.dto.js'
+import { type GetUserDto, GetUserSchema } from './dto/get-user-param.dto.js'
+import { UpdateUserSchema } from './dto/update-user.dto.js'
 
 export const userRoute = new Hono().basePath('user')
 

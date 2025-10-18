@@ -3,13 +3,13 @@ import { DayOfWeek } from '@prisma/client'
 import { Hono } from 'hono'
 import z from 'zod'
 
-import {
-	CreateUpdateSessionSchema,
-	type CreateUpdateSessionDto
-} from './dto/create-update-session.dto.js'
-import { db } from '../../db/prisma-config.js'
+import db from '../../db/db.js'
 import { requireUserSession } from '../../middleware/require-user-session-middleware.js'
 import { HTTP_STATUS } from '../../utils/http-status.enum.js'
+import {
+	type CreateUpdateSessionDto,
+	CreateUpdateSessionSchema
+} from './dto/create-update-session.dto.js'
 
 export const sessionRoute = new Hono().basePath('session')
 
